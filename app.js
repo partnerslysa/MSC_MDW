@@ -78,7 +78,6 @@ app.post('/upfile', async (req, res) => {
 //SERVICIO DESTINADO A PROBAR LA DISPONIBLIDAD DE LA APLICACION
 app.get("/", (req, res) => {
 	res.json({
-		API: 'Checkout',
 		Status: 'OK'
 	})
 }); 
