@@ -3,6 +3,7 @@ const multer = require('multer');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const SftpClient = require('ssh2-sftp-client');
+const { error } = require('console');
 const app = express();
 const port = 3000;
 
@@ -11,68 +12,80 @@ const port = 3000;
 //const upload = multer({ storage: storage });
 app.use(bodyParser.json());
 
-app.post('/upfile', async (req, res) => {
+app.post('/uploadFile', async (req, res) => {
 
-  //const data = req.body;
-  //console.log(`data: ${JSON.stringify(data)}`);
     const fileName = req[`body`][`fileName`];
-    const fileUrl =req[`body`][`fileUrl`];//'https://3799749-sb1.app.netsuite.com/core/media/media.nl?id=526659&c=3799749_SB1&h=7lP9gQ91BTppGg5ModPdsaYZzJ2P_sxtWzSbjMNyDnCeX2Y7&_xt=.txt';
+    const fileUrl = req[`body`][`fileUrl`];
+    const host = req[`body`][`host`];
+    const port = req[`body`][`port`];
+    const username = req[`body`][`username`];
+    const remotePath = req[`body`][`remotePath`];
     const respuesta = await axios.get(fileUrl);
 
-    console.log(`fileName: ${fileName}`);
-    console.log(`fileUrl: ${fileUrl}`);
-    console.log(`Contenido archivo: ${respuesta.data}`);
+    console.log(`25. fileName: ${fileName} - fileUrl: ${fileUrl} - host: ${host} - port: ${port} - username: ${username} - remotePath: ${remotePath}\n`);
+    //console.log(`26. Contenido archivo: ${respuesta.data}\n`);
     
     const SftpClient = require('ssh2-sftp-client');
 
     const config = {
-        host: '44.197.47.56',
-        port: 22,
-        username: 'ec2-user',
-        privateKey: require('fs').readFileSync('PEM/SantaCarmen.pem')
+        host: host,//'44.197.47.56',
+        port: port,//22,
+        username: username,//'ec2-user',
+        privateKey: require('fs').readFileSync('PEM/SantaCarmen.pem'),
+        timeout: 5000 // Tiempo de espera en milisegundos (5 segundos en este caso)
       };
     
     const sftp = new SftpClient();
     
-    // Conectar al servidor SFTP
+    //CONEXION SERVIDOR SFTP
     sftp.connect(config)
       .then(() => {
-        console.log('Conexión establecida con el servidor SFTP');
-        //const fileBuffer = req.file.buffer;
-        //console.log('fileBuffer: '+fileBuffer);
-        //const fileContent = fileBuffer.toString(); // Convertir el buffer a cadena de texto
-        
-    // Puedes realizar operaciones con el contenido del archivo aquí
-
-    // Enviar respuesta al cliente
-    //console.log('fileContent:'+fileContent);
-        // Realizar operaciones con el servidor SFTP, por ejemplo:
-         
-        // sftp.get(remotePath, localFile)
-    
-
-      })
-      .then(() => {
+        console.log(`43. Conexión establecida con el servidor SFTP - host: ${host}\n`);
+      
+        //RUTA DONDE SE ALMACENAN LOS ARCHIVOS TXT PROVENIENTES DE NETSUITE
         const rutaLocal = `ArchivosTXT/${fileName}`;
-        //const fileBuffer = req.file.buffer;
-        //const fileContent = fileBuffer.toString();
-        //console.log('69.fileBuffer: '+fileBuffer);
-        //console.log('70.fileContent: '+fileContent);
-        const remotePath = `/home/ec2-user/test/${fileName}`;
-        //const contenidoArchivo = require('fs').readFileSync('C:/Users/ingaa/Downloads/Archivo Prueba2.txt');
-        //console.log('74. contenidoArchivo: '+contenidoArchivo);
+        
+        //RUTA DEL SERVIDOR DONDE SE ALMACENAN LOS ARCHIVOS TXT PROVENIENTES DE NETSUITE
+        const remotePath2 = `${remotePath}${fileName}`;//`/home/ec2-user/test/${fileName}`;
+        
+        //SE CREA ARCHIVO TXT EN CARPETA DE LA APLICACION PARA LUEGO PODER ENVIARLO A SERVIDOR SFPT
         require('fs').writeFileSync(rutaLocal, respuesta.data, 'utf-8');
-        //await sftp.put(contenidoArchivo, rutaRemota);
-        sftp.put(rutaLocal, remotePath)
-        console.log('Desconexión exitosa');
-                // Desconectar después de realizar las operaciones
-                //return sftp.end();
-                res.status(200).json({ message: 'Archivo cargado con éxito.', content: respuesta.data });
-      })
-      .catch((err) => {
-        console.error('Error:', err.message);
-      })
-    
+
+        //SE ENVIA ARCHIVO TXT A SERVIDOR SFPT
+        sftp.put(rutaLocal, remotePath2).then(() => {
+          
+          //SE DESCONECTA DE SERVIDOR SFTP
+          sftp.end();
+
+          console.log(`60. Desconexión exitosa con el servidor SFTPT - host: ${host}\n`);
+        
+          res.status(200).json({
+            error: false,
+            message: 'Archivo cargado con éxito.',
+            fileName: fileName,
+            fileContent: respuesta.data
+          });
+        
+        }).catch((err) => {
+
+          res.status(400).json({
+            error: true,
+            message: `Error al cargar archivo en servidor SFPT - Details: ${JSON.stringify(err)}`,
+            fileName: fileName,
+            fileContent: null
+          });
+
+        });
+      }).catch((err) => {
+
+        res.status(400).json({
+          error: true,
+          message: `Error al intentar conectar con servidor SFPT - Details: ${JSON.stringify(err)}`,
+          fileName: fileName,
+          fileContent: null
+        });
+        
+      });
   });
 
 //SERVICIO DESTINADO A PROBAR LA DISPONIBLIDAD DE LA APLICACION
