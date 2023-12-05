@@ -113,7 +113,7 @@ app.post('/getFile', async (req, res) => {
     const sftp = new SftpClient();
     
     //CONEXION SERVIDOR SFTP
-    sftp.connect(config)
+    await sftp.connect(config)
       //.then(() => {
         console.log(`118. Conexión establecida con el servidor SFTP - host: ${host}\n`);
       
@@ -130,21 +130,21 @@ app.post('/getFile', async (req, res) => {
         if (existeArchivo) {
           // Descargar el archivo
           const contenidoArchivo = await sftp.get(remotePath2)
-          .then(() => {
+          //.then(() => {
             console.log(`134. remotePath2: ${remotePath2} - contenidoArchivo: ${JSON.stringify(contenidoArchivo.toString())}\n`);
                 // Configurar la respuesta HTTP para la descarga
                 //res.setHeader('Content-Disposition', `attachment; fileName=${fileName}`);
                 res.send(contenidoArchivo);
-          }).catch((err) => {
+          //}).catch((err) => {
 
-            res.status(400).json({
-              error: true,
-              message: `Error al descargar archivo desde servidor SFPT - Details: ${JSON.stringify(err)}`,
-              fileName: fileName,
-              fileContent: null
-            });
+            //res.status(400).json({
+              //error: true,
+              //message: `Error al descargar archivo desde servidor SFPT - Details: ${JSON.stringify(err)}`,
+              //fileName: fileName,
+              //fileContent: null
+            //});
     
-          });
+          //});
         } else {
           res.status(404).json({ mensaje: 'Archivo no encontrado.' });
         }
