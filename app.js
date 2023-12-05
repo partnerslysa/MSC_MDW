@@ -52,8 +52,9 @@ app.post('/uploadFile', async (req, res) => {
         require('fs').writeFileSync(rutaLocal, respuesta.data, 'utf-8');
 
         //SE ENVIA ARCHIVO TXT A SERVIDOR SFPT
-        sftp.put(rutaLocal, remotePath2).then(() => {
-          
+        sftp.put(rutaLocal, remotePath2)
+        .then(() => {
+
           //SE DESCONECTA DE SERVIDOR SFTP
           sftp.end();
 
@@ -76,6 +77,7 @@ app.post('/uploadFile', async (req, res) => {
           });
 
         });
+
       }).catch((err) => {
 
         res.status(400).json({
@@ -84,9 +86,83 @@ app.post('/uploadFile', async (req, res) => {
           fileName: fileName,
           fileContent: null
         });
+    });
+});
+
+app.post('/getFile', async (req, res) => {
+
+  const fileName = req[`body`][`fileName`];
+  const host = req[`body`][`host`];
+  const port = req[`body`][`port`];
+  const username = req[`body`][`username`];
+  const remotePath = req[`body`][`remotePath`];
+
+  console.log(`25. fileName: ${fileName} - host: ${host} - port: ${port} - username: ${username} - remotePath: ${remotePath}\n`);
+  
+  try
+  {
+    const SftpClient = require('ssh2-sftp-client');
+
+    const config = {
+        host: host,
+        port: port,
+        username: username,
+        privateKey: require('fs').readFileSync('PEM/SantaCarmen.pem')
+      };
+    
+    const sftp = new SftpClient();
+    
+    //CONEXION SERVIDOR SFTP
+    sftp.connect(config)
+      //.then(() => {
+        console.log(`118. Conexión establecida con el servidor SFTP - host: ${host}\n`);
+      
+        //RUTA DONDE SE ALMACENAN LOS ARCHIVOS TXT PROVENIENTES DE NETSUITE
+        const rutaLocal = `ArchivosTXT/${fileName}`;
         
-      });
-  });
+        //RUTA DEL SERVIDOR DONDE SE ALMACENAN LOS ARCHIVOS TXT PROVENIENTES DE NETSUITE
+        const remotePath2 = `${remotePath}${fileName}`;//`/home/ec2-user/test/${fileName}`;
+
+        // Verificar si el archivo existe en el servidor SFTP
+        const existeArchivo = await sftp.exists(remotePath2)
+        console.log(`128. existeArchivo: ${existeArchivo}\n`);
+        
+        if (existeArchivo) {
+          // Descargar el archivo
+          const contenidoArchivo = await sftp.get(remotePath2)
+          .then(() => {
+            console.log(`134. remotePath2: ${remotePath2} - contenidoArchivo: ${JSON.stringify(contenidoArchivo.toString())}\n`);
+                // Configurar la respuesta HTTP para la descarga
+                //res.setHeader('Content-Disposition', `attachment; fileName=${fileName}`);
+                res.send(contenidoArchivo);
+          }).catch((err) => {
+
+            res.status(400).json({
+              error: true,
+              message: `Error al descargar archivo desde servidor SFPT - Details: ${JSON.stringify(err)}`,
+              fileName: fileName,
+              fileContent: null
+            });
+    
+          });
+        } else {
+          res.status(404).json({ mensaje: 'Archivo no encontrado.' });
+        }
+      /*}).catch((err) => {
+
+        res.status(400).json({
+          error: true,
+          message: `Error al intentar conectar con servidor SFPT - Details: ${JSON.stringify(err)}`,
+          fileName: fileName,
+          fileContent: null
+        });
+    });*/
+  }
+  catch(e)
+  {
+    
+  }
+});
 
 //SERVICIO DESTINADO A PROBAR LA DISPONIBLIDAD DE LA APLICACION
 app.get("/", (req, res) => {
