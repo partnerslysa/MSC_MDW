@@ -100,7 +100,7 @@ app.post('/uploadFile2', async (req, res) => {
   const remotePath = req[`body`][`remotePath`];
   const respuesta = await axios.get(fileUrl);
 
-  console.log(`25. fileName: ${fileName} - fileUrl: ${fileUrl} - host: ${host} - port: ${port} - username: ${username} - remotePath: ${remotePath}\n`);
+  console.log(`25. fileName: ${fileName} - fileUrl: ${fileUrl} - host: ${host} - port: ${port} - username: ${username} - password: ${password} - remotePath: ${remotePath}\n`);
   //console.log(`26. Contenido archivo: ${respuesta.data}\n`);
   
   const SftpClient = require('ssh2-sftp-client');
