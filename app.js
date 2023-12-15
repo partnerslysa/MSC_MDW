@@ -4,6 +4,7 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const SftpClient = require('ssh2-sftp-client');
 const { error } = require('console');
+const bcrypt = require('bcrypt');
 const app = express();
 const port = 3000;
 
@@ -105,11 +106,14 @@ app.post('/uploadFile2', async (req, res) => {
   
   const SftpClient = require('ssh2-sftp-client');
 
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  console.log(`111. hashedPassword: ${hashedPassword}\n`);
   const config = {
       host: host,
       port: port,
       username: username,
-      password: password,
+      password: hashedPassword,
       timeout: 5000 // Tiempo de espera en milisegundos (5 segundos en este caso)
     };
   
