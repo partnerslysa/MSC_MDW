@@ -113,8 +113,8 @@ app.post('/uploadFile2', async (req, res) => {
       host: host,
       port: port,
       username: username,
-      password: hashedPassword,
-      timeout: 5000 // Tiempo de espera en milisegundos (5 segundos en este caso)
+      password: hashedPassword/*,
+      timeout: 5000 // Tiempo de espera en milisegundos (5 segundos en este caso)*/
     };
   
   const sftp = new SftpClient();
