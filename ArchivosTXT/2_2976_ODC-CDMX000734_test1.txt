@@ -1,8 +1,0 @@
-01|2|ODC-CDMX00|663
-1|0|864|pz|03/03/2022|03/03/2022||10323|A/V set, Baxter, Novaline adulto|A/V set, Baxter, Novaline adulto|MXN|99.90|||||66|66|66|||||30 días|15.984|||86313.60|100123.78|
-2|0|24|pz|03/03/2022|03/03/2022||10324|Dializador, Baxter, Revaclear 300|Dializador, Baxter, Revaclear 300 (11474|MXN|209.79|||||66|66|66|||||30 días|33.566|||5034.96|5840.55|
-3|0|432|pz|03/03/2022|03/03/2022||10325|Dializador, Baxter, Revaclear 400|Dializador, Baxter, Revaclear 400 (11474|MXN|209.79|||||66|66|66|||||30 días|33.566|||90629.28|105129.96|
-4|0|72|pz|03/03/2022|03/03/2022||10367|Theranova 400 kit Baxter|Theranova 400 kit (955365)|MXN|362.25|||||66|66|66|||||30 días|57.96|||26082.00|30255.12|
-5|0|500|pz|03/03/2022|03/03/2022||10319|Aguja FAV Baxter 15G|Aguja FAV Baxter 15G (F15BSG)|MXN|10.21|||||66|66|66|||||30 días|1.634|||5105.00|5921.80|
-6|0|100|pz|03/03/2022|03/03/2022||9669|Aguja FAV Baxter 16G|Aguja FAV Baxter 16G |MXN|10.21|||||66|66|66|||||30 días|1.634|||1021.00|1184.36|
-Número de orden Baxter: 6090246.|248455.57|||214185.84

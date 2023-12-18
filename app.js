@@ -104,7 +104,7 @@ app.post('/uploadFile2', async (req, res) => {
   console.log(`25. fileName: ${fileName} - fileUrl: ${fileUrl} - host: ${host} - port: ${port} - username: ${username} - password: ${password} - remotePath: ${remotePath}\n`);
   //console.log(`26. Contenido archivo: ${respuesta.data}\n`);
   
-  //const SftpClient = require('ssh2-sftp-client');
+  const SftpClient = require('ssh2-sftp-client');
   const { Client } = require('ssh2');
 
   const saltRounds = 10;
@@ -114,16 +114,90 @@ app.post('/uploadFile2', async (req, res) => {
       host: host,
       port: port,
       username: username,
-      password: hashedPassword/*,
+      password: password,
+      algorithms: {
+        kex: [
+          "diffie-hellman-group1-sha1",
+          "ecdh-sha2-nistp256",
+          "ecdh-sha2-nistp384",
+          "ecdh-sha2-nistp521",
+          "diffie-hellman-group-exchange-sha256",
+          "diffie-hellman-group14-sha1"
+        ],
+        cipher: [
+          "3des-cbc",
+          "aes128-ctr",
+          "aes192-ctr",
+          "aes256-ctr",
+          "aes128-gcm",
+          "aes128-gcm@openssh.com",
+          "aes256-gcm",
+          "aes256-gcm@openssh.com"
+        ],
+        serverHostKey: [
+          "ssh-rsa",
+          "ecdsa-sha2-nistp256",
+          "ecdsa-sha2-nistp384",
+          "ecdsa-sha2-nistp521"
+        ],
+        hmac: [
+          "hmac-sha2-256",
+          "hmac-sha2-512",
+          "hmac-sha1"
+        ]
+    }/*,
       timeout: 5000 // Tiempo de espera en milisegundos (5 segundos en este caso)*/
     };
   
-  //const sftp = new SftpClient();
-  const conn = new Client();
+  const sftp = new SftpClient();
+  const conn = new Client({
+  });
 
   conn.on('ready', () => {
     console.log('Conexión SFTP establecida');
     // Aquí puedes realizar operaciones SFTP
+
+
+    console.log(`43. Conexión establecida con el servidor SFTP - host: ${host}\n`);
+    
+    //RUTA DONDE SE ALMACENAN LOS ARCHIVOS TXT PROVENIENTES DE NETSUITE
+    const rutaLocal = `ArchivosTXT/${fileName}`;
+    
+    //RUTA DEL SERVIDOR DONDE SE ALMACENAN LOS ARCHIVOS TXT PROVENIENTES DE NETSUITE
+    const remotePath2 = `${remotePath}${fileName}`;//`/home/ec2-user/test/${fileName}`;
+    
+    //SE CREA ARCHIVO TXT EN CARPETA DE LA APLICACION PARA LUEGO PODER ENVIARLO A SERVIDOR SFPT
+    require('fs').writeFileSync(rutaLocal, respuesta.data, 'utf-8');
+
+    //SE ENVIA ARCHIVO TXT A SERVIDOR SFPT
+    conn.put(rutaLocal, remotePath2)
+    .then(() => {
+
+      //SE DESCONECTA DE SERVIDOR SFTP
+      //sftp.end();
+
+      console.log(`60. Desconexión exitosa con el servidor SFTPT - host: ${host}\n`);
+    
+      res.status(200).json({
+        error: false,
+        message: 'Archivo cargado con éxito.',
+        fileName: fileName,
+        fileContent: respuesta.data
+      });
+    
+    }).catch((err) => {
+
+      res.status(400).json({
+        error: true,
+        message: `Error al cargar archivo en servidor SFPT - Details: ${JSON.stringify(err)}`,
+        fileName: fileName,
+        fileContent: null
+      });
+
+    });
+
+
+
     conn.end();
   });
   
