@@ -104,7 +104,8 @@ app.post('/uploadFile2', async (req, res) => {
   console.log(`25. fileName: ${fileName} - fileUrl: ${fileUrl} - host: ${host} - port: ${port} - username: ${username} - password: ${password} - remotePath: ${remotePath}\n`);
   //console.log(`26. Contenido archivo: ${respuesta.data}\n`);
   
-  const SftpClient = require('ssh2-sftp-client');
+  //const SftpClient = require('ssh2-sftp-client');
+  const { Client } = require('ssh2');
 
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -117,10 +118,24 @@ app.post('/uploadFile2', async (req, res) => {
       timeout: 5000 // Tiempo de espera en milisegundos (5 segundos en este caso)*/
     };
   
-  const sftp = new SftpClient();
+  //const sftp = new SftpClient();
+  const conn = new Client();
+
+  conn.on('ready', () => {
+    console.log('Conexión SFTP establecida');
+    // Aquí puedes realizar operaciones SFTP
+    conn.end();
+  });
   
+  conn.on('error', (err) => {
+    console.error('Error de conexión SSH:', err);
+    // Puedes manejar el error de manera específica aquí
+  });
+  
+  conn.connect(config);
+
   //CONEXION SERVIDOR SFTP
-  sftp.connect(config)
+  /*sftp.connect(config)
     .then(() => {
       console.log(`43. Conexión establecida con el servidor SFTP - host: ${host}\n`);
     
@@ -168,7 +183,7 @@ app.post('/uploadFile2', async (req, res) => {
         fileName: fileName,
         fileContent: null
       });
-  });
+  });*/
 });
 
 app.post('/getFile', async (req, res) => {
