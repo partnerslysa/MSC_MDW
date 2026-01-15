@@ -1,0 +1,6 @@
+
+[qgtunnel.0]
+accept = "127.0.0.1:2222"
+connect = "50.56.130.250:"
+encrypted = false
+transparent = true
