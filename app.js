@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 // === CONFIG SFTP PARA QGTUNNEL ===
 // Todo tráfico SFTP saldrá por QGTunnel en localhost:2222
 const QGTUNNEL_HOST = '127.0.0.1';
-const QGTUNNEL_PORT = 22;
+const QGTUNNEL_PORT = 2222;
 
 // -------------------------
 // SERVICIO CARGA DE ARCHIVO
