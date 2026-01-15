@@ -1,21 +1,21 @@
 #!/bin/bash
-
-# Salir si hay errores
 set -e
 
-echo "=== Configurando QGTunnel ==="
+echo "=== Iniciando configuración QGTunnel ==="
 
-# Ir al directorio del proyecto
-cd $RENDER_SERVICE_ROOT || exit 1
+cd $RENDER_SERVICE_ROOT
 
-# Extraer qgtunnel si no existe el ejecutable
-if [ ! -f ./qgtunnel ]; then
-  echo "Extrayendo qgtunnel.tar.gz..."
-  tar -xvzf qgtunnel.tar.gz
-  chmod +x qgtunnel
-fi
+echo "Verificando binario QGTunnel..."
+ls -l qgtunnel
 
-echo "QGTunnel listo:"
-./qgtunnel --version || echo "No se pudo ejecutar qgtunnel aún."
+chmod +x qgtunnel
 
-echo "=== Fin de postdeploy ==="
+echo "Iniciando QGTunnel en background..."
+./qgtunnel -c qgtunnel.conf > qgtunnel.log 2>&1 &
+
+sleep 2
+
+echo "Verificando si QGTunnel está escuchando en 2222..."
+netstat -tlnp || ss -tlnp
+
+echo "=== QGTunnel iniciado ==="
