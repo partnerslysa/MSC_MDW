@@ -4,13 +4,31 @@ const bodyParser = require('body-parser');
 const { Client } = require('ssh2');
 const concatStream = require('concat-stream');
 const { error } = require('console');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+let auth = function(req, res, next){
+  const token = req.header('x-auth-token');
+  console.log(`12. token: ${token}\n`);
+  if(!token)
+    return res.status(401).json({Auth: 'Sin token, no tienes autorizacion'});
+  try{
+    console.log(`16. process.env.API_KEY: ${process.env.API_KEY}`);
+    const decoded = jwt.verify(token, process.env.API_KEY); // Si el API_KEY coincide, devuelve ell payload, sino tira un error.
+    // console.log(`18. decoded: ${JSON.stringify(decoded)}\n`);
+    next();
+  }
+  catch(e){
+    res.status(400).json({Auth: 'Token invalido'});
+  }
+}
 const app = express();
-const port = 3000;
+const port = 4000;
 
 app.use(bodyParser.json());
 
 //SERVICIO DE CARGA DE ARCHIVO EN SERVIDOR SFTP
-app.post('/uploadFile', async (req, res) => {
+app.post('/uploadFile', auth, async (req, res) => {
 
   const fileName = req[`body`][`fileName`];
   const fileUrl = req[`body`][`fileUrl`];
@@ -165,7 +183,7 @@ app.post('/uploadFile', async (req, res) => {
 });
 
 //SERVICIO DE BUSQUEDA DE ARCHIVOS EN SERVIDOR SFPT
-app.post('/searchFile', async (req, res) => {
+app.post('/searchFile', auth, async (req, res) => {
 
   const fileName = req[`body`][`fileName`];
   const host = req[`body`][`host`];
@@ -354,7 +372,7 @@ app.post('/searchFile', async (req, res) => {
 });
 
 //SERVICIO DE BUSQUEDA DE ARCHIVOS EN SERVIDOR SFPT
-app.post('/searchFiles', async (req, res) => {
+app.post('/searchFiles', auth, async (req, res) => {
 
   const host = req[`body`][`host`];
   const port = req[`body`][`port`];
@@ -501,7 +519,7 @@ app.post('/searchFiles', async (req, res) => {
 });
 
 //SERVICIO DE BUSQUEDA DE ARCHIVOS EN SERVIDOR SFPT
-app.post('/deleteFile', async (req, res) => {
+app.post('/deleteFile', auth, async (req, res) => {
 
   const fileName = req[`body`][`fileName`];
   const host = req[`body`][`host`];
@@ -696,10 +714,36 @@ app.post('/deleteFile', async (req, res) => {
 });
 
 //SERVICIO DESTINADO A PROBAR LA DISPONIBLIDAD DE LA APLICACION
-app.get("/", (req, res) => {
+app.get("/", auth, (req, res) => {
 	res.json({
 		Status: 'OK'
 	})
+}); 
+
+//SERVICIO DESTINADO A PROBAR LA DISPONIBLIDAD DE LA APLICACION
+app.get("/getJWT", (req, res) => {
+  const token = req.header('x-auth-token');
+  console.log(`12. token: ${token}\n`);
+  if(!token)
+    return res.status(401).json({
+    error: true,
+    message: 'Sin token, no tienes autorizacion'
+  });
+  try{
+    console.log(`16. process.env.API_KEY: ${process.env.API_KEY}`);
+    const JWT = jwt.sign("{}", token);
+    console.log(`16. JWT: ${JWT}`);
+    const decoded = jwt.verify(JWT, process.env.API_KEY); // Si el API_KEY coincide, devuelve el payload, sino tira un error.
+    res.status(200).json({   
+      error: false,
+      JWT: JWT
+    });
+  }
+  catch(e){
+    res.status(400).json({    
+      error: true,
+      Auth: 'Token invalido'});
+  }
 }); 
   
 //INICIAR SERVIDOR
