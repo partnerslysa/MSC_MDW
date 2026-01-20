@@ -1,21 +1,18 @@
 #!/bin/bash
-set -e
+set -e  # Salir si hay errores
 
-echo "=== Iniciando configuración QGTunnel ==="
+echo "=== POSTDEPLOY QGTUNNEL ==="
 
-cd $RENDER_SERVICE_ROOT
+# Ir al directorio del proyecto (Render define esta variable)
+cd $RENDER_SERVICE_ROOT || exit 1
 
-echo "Verificando binario QGTunnel..."
+echo "Contenido antes de chmod:"
 ls -l qgtunnel
 
+echo "Asignando permisos de ejecución a qgtunnel..."
 chmod +x qgtunnel
 
-echo "Iniciando QGTunnel en background..."
-./qgtunnel -c qgtunnel.conf > qgtunnel.log 2>&1 &
+echo "Contenido después de chmod:"
+ls -l qgtunnel
 
-sleep 2
-
-echo "Verificando si QGTunnel está escuchando en 2222..."
-netstat -tlnp || ss -tlnp
-
-echo "=== QGTunnel iniciado ==="
+echo "=== FIN POSTDEPLOY ==="
