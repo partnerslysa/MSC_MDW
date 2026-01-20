@@ -1,18 +1,21 @@
 #!/bin/bash
-set -e  # Salir si hay errores
+set -e
 
 echo "=== POSTDEPLOY QGTUNNEL ==="
 
-# Ir al directorio del proyecto (Render define esta variable)
+# Ir al directorio del proyecto
 cd $RENDER_SERVICE_ROOT || exit 1
 
+# Listar archivos antes de chmod
 echo "Contenido antes de chmod:"
-ls -l qgtunnel
+ls -l
 
+# Asignar permisos de ejecución al binario
 echo "Asignando permisos de ejecución a qgtunnel..."
-chmod +x qgtunnel
+chmod +x ./qgtunnel || echo "Error asignando permisos"
 
+# Verificar permisos
 echo "Contenido después de chmod:"
-ls -l qgtunnel
+ls -l
 
 echo "=== FIN POSTDEPLOY ==="
