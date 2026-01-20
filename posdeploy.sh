@@ -6,7 +6,7 @@ echo "=== POSTDEPLOY QGTUNNEL ==="
 echo "RENDER_SERVICE_ROOT = $RENDER_SERVICE_ROOT"
 
 # Entrar al directorio real del proyecto
-cd "$RENDER_SERVICE_ROOT/project" || {
+cd /project/src || {
   echo "No se pudo entrar al directorio project"
   exit 1
 }
