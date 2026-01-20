@@ -12,15 +12,11 @@ echo "Contenido antes de chmod:"
 ls -l
 
 # Entrar al directorio real del proyecto
-cd opt/render/project/src || {
-  echo "No se pudo entrar al directorio project"
-  exit 1
-}
 
-echo "Directorio actual:"
+echo "16.Directorio actual:"
 pwd
 
-echo "Contenido antes de chmod:"
+echo "19.Contenido antes de chmod:"
 ls -l
 
 echo "Asignando permisos de ejecución a qgtunnel..."
