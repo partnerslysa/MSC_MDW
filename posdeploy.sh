@@ -3,7 +3,10 @@ set -e
 
 echo "=== POSTDEPLOY QGTUNNEL ==="
 
-echo "RENDER_SERVICE_ROOT = $RENDER_SERVICE_ROOT"
+#echo "RENDER_SERVICE_ROOT = $RENDER_SERVICE_ROOT"
+
+echo "Directorio actual:"
+pwd
 
 # Entrar al directorio real del proyecto
 cd project/src || {
