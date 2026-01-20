@@ -23,7 +23,7 @@ let auth = function(req, res, next){
   }
 }
 const app = express();
-const port = 2222;
+const port = 3000;
 
 app.use(bodyParser.json());
 const QGTUNNEL_HOST = process.env.QGTUNNEL_HOST;
@@ -84,7 +84,7 @@ app.post('/searchFiles', auth, async (req, res) => {
 
   try
   {
-    await conn.connect(sftpConfig);
+    conn.connect(sftpConfig);
 
     conn.on(`ready`, () => {
       
