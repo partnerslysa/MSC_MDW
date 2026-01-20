@@ -84,7 +84,7 @@ app.post('/searchFiles', auth, async (req, res) => {
 
   try
   {
-    conn.connect(sftpConfig);
+    await conn.connect(sftpConfig);
 
     conn.on(`ready`, () => {
       
