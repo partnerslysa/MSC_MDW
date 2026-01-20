@@ -3,19 +3,27 @@ set -e
 
 echo "=== POSTDEPLOY QGTUNNEL ==="
 
-# Ir al directorio del proyecto
-cd $RENDER_SERVICE_ROOT || exit 1
+echo "RENDER_SERVICE_ROOT = $RENDER_SERVICE_ROOT"
 
-# Listar archivos antes de chmod
+# Entrar al directorio real del proyecto
+cd "$RENDER_SERVICE_ROOT/project" || {
+  echo "No se pudo entrar al directorio project"
+  exit 1
+}
+
+echo "Directorio actual:"
+pwd
+
 echo "Contenido antes de chmod:"
 ls -l
 
-# Asignar permisos de ejecución al binario
 echo "Asignando permisos de ejecución a qgtunnel..."
-chmod +x ./qgtunnel || echo "Error asignando permisos"
+chmod +x qgtunnel
 
-# Verificar permisos
 echo "Contenido después de chmod:"
-ls -l
+ls -l qgtunnel
+
+echo "Arrancando QGTunnel en background..."
+./qgtunnel &
 
 echo "=== FIN POSTDEPLOY ==="
