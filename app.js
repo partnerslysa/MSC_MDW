@@ -23,7 +23,7 @@ let auth = function(req, res, next){
   }
 }
 const app = express();
-const port = 4000;
+const port = 2222;
 
 app.use(bodyParser.json());
 const QGTUNNEL_HOST = process.env.QGTUNNEL_HOST;
@@ -43,8 +43,8 @@ app.post('/searchFiles', auth, async (req, res) => {
   console.log(`43. QGTUNNEL_HOST: ${QGTUNNEL_HOST} - QGTUNNEL_PORT: ${QGTUNNEL_PORT}\n`);
   
   const sftpConfig = {
-    host: QGTUNNEL_HOST,
-    port: QGTUNNEL_PORT,
+    host: '127.0.0.1',
+    port: 2222,
     username: username,
     password: password,
     algorithms: {
