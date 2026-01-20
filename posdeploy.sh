@@ -8,8 +8,11 @@ echo "=== POSTDEPLOY QGTUNNEL ==="
 echo "Directorio actual:"
 pwd
 
+echo "Contenido antes de chmod:"
+ls -l
+
 # Entrar al directorio real del proyecto
-cd project/src || {
+cd opt/render/project/src || {
   echo "No se pudo entrar al directorio project"
   exit 1
 }
